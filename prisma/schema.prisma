@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Game {
+  VALORANT
+  CS2
+  DOTA2
+  LOL
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  name      String
+  game      Game
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reports Report[]
+}
+
+model Report {
+  id             String   @id @default(cuid())
+  teamId         String
+  team           Team     @relation(fields: [teamId], references: [id])
+  game           Game
+  matchCount     Int
+  structuredJson Json
+  textReport     String
+  createdAt      DateTime @default(now())
+
+  @@index([teamId, createdAt])
+}
