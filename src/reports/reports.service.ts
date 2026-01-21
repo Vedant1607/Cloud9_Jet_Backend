@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { AnalyticsService } from 'src/analytics/analytics.service';
-import { PrismaService } from 'src/common/prisma/prisma.service';
-import { GridService } from 'src/grid/grid.service';
+import { PrismaService } from '../common/prisma/prisma.service';
+import { AnalyticsService } from '../analytics/analytics.service';
+import { GridService } from '../grid/grid.service';
 import { GenerateReportDto } from './dto/generate-report.dto';
+import { LlmService } from '../llm/llm.service';
 
 @Injectable()
 export class ReportsService {
@@ -10,6 +11,7 @@ export class ReportsService {
     private readonly prisma: PrismaService,
     private readonly grid: GridService,
     private readonly analytics: AnalyticsService,
+    private readonly llm: LlmService,
   ) {}
 
   async generate(dto: GenerateReportDto) {
@@ -36,33 +38,26 @@ export class ReportsService {
 
     const structuredJson = {
       team: {
-        id: team?.id,
-        name: team?.name,
-        game: team?.game,
+        id: team.id,
+        name: team.name,
+        game: team.game,
       },
       matches,
       insights,
       generatedAt: new Date().toISOString(),
     };
 
-    // Placeholder text report for Step 3 (LLM in Step 4)
-    const textReport = `
-      Scouting Report: ${team?.name} (${dto.game}Matches analyzed: ${dto.matchCount}
-      
-      Win Rate: ${insights.winRate}
-      Key Insights:
-      - ${insights.keyInsights.join('\n- ')}
-      
-      Risks:
-      - ${insights.risks.join('\n- ')}
-      
-      Recommendations:
-      - ${insights.recommendations.join('\n- ')}
-    `.trim();
+    // Real LLM report text (Ollama)
+    const textReport = await this.llm.generateReportText({
+      teamName: team.name,
+      game: dto.game,
+      matchCount: dto.matchCount,
+      structuredJson,
+    });
 
     const report = await this.prisma.report.create({
       data: {
-        teamId: team?.id,
+        teamId: team.id,
         game: dto.game,
         matchCount: dto.matchCount,
         structuredJson,

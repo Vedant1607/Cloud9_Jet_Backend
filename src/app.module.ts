@@ -6,6 +6,7 @@ import { PrismaModule } from './common/prisma/prisma.module';
 import { GridModule } from './grid/grid.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ReportsModule } from './reports/reports.module';
+import { LlmModule } from './llm/llm.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ReportsModule } from './reports/reports.module';
     HealthModule,
     GridModule,
     AnalyticsModule,
+    LlmModule,
     ReportsModule,
   ],
 })
