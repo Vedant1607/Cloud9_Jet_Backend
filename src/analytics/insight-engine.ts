@@ -1,4 +1,4 @@
-import { GridMatch } from "src/grid/grid.service";
+import { GridMatch } from 'src/grid/grid.service';
 
 export type TeamInsights = {
   winRate: number;

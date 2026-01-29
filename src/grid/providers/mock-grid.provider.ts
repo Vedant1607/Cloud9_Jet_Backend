@@ -3,10 +3,7 @@ import { GridMatch } from '../grid.service';
 
 @Injectable()
 export class MockGridProvider {
-  async getRecentMatches(
-    teamId: string,
-    matchCount: number,
-  ): Promise<GridMatch[]> {
+  getRecentMatches(teamId: string, matchCount: number): Promise<GridMatch[]> {
     const now = Date.now();
 
     const matches: GridMatch[] = Array.from({ length: matchCount }).map(
@@ -25,6 +22,6 @@ export class MockGridProvider {
       },
     );
 
-    return matches;
+    return Promise.resolve(matches);
   }
 }
