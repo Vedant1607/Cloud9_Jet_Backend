@@ -7,6 +7,8 @@ import { GridModule } from './grid/grid.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ReportsModule } from './reports/reports.module';
 import { LlmModule } from './llm/llm.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -21,5 +23,7 @@ import { LlmModule } from './llm/llm.module';
     LlmModule,
     ReportsModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

@@ -1,5 +1,13 @@
 import { plainToInstance } from 'class-transformer';
-import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Min,
+  validateSync,
+  ValidationError,
+} from 'class-validator';
 
 class EnvVars {
   @IsOptional()
@@ -25,13 +33,12 @@ export function validateEnv(config: Record<string, unknown>) {
     enableImplicitConversion: true,
   });
 
-  const { validateSync } = require('class-validator');
   const errors = validateSync(validated, { skipMissingProperties: false });
 
   if (errors.length > 0) {
     throw new Error(
       `ENV validation failed:\n${errors
-        .map((e) => JSON.stringify(e.constraints))
+        .map((e: ValidationError) => JSON.stringify(e.constraints))
         .join('\n')}`,
     );
   }

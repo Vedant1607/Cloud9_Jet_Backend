@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { TeamInsights } from 'src/analytics/insight-engine';
 
 @Injectable()
 export class LlmService {
@@ -6,12 +7,12 @@ export class LlmService {
     teamName: string;
     game: string;
     matchCount: number;
-    structuredJson: any;
+    structuredJson: { insights: TeamInsights };
   }): Promise<string> {
     const baseUrl = process.env.OLLAMA_BASE_URL!;
     const model = process.env.OLLAMA_MODEL || 'llama3.1:latest';
 
-    const insights = params.structuredJson?.insights;
+    const insights = params.structuredJson.insights;
 
     const prompt = `
 You are an esports analyst.
@@ -58,21 +59,22 @@ Return sections:
 
       const data = (await res.json()) as { response?: string };
       return data.response?.trim() || 'No response generated.';
-    } catch (err: any) {
-      if (err?.name === 'AbortError') {
+    } catch (err) {
+      const error = err as Error;
+      if (error.name === 'AbortError') {
         return `Scouting Report (Fallback)
 
         Summary:
         LLM timed out. Returning quick rule-based report.
 
         Strengths:
-        - ${insights?.keyInsights?.join('\n- ') || 'N/A'}
+        - ${insights.keyInsights.join('\n- ') || 'N/A'}
 
         Weaknesses / Risks:
-        - ${insights?.risks?.join('\n- ') || 'N/A'}
+        - ${insights.risks.join('\n- ') || 'N/A'}
 
         Recommendations:
-        - ${insights?.recommendations?.join('\n- ') || 'N/A'}
+        - ${insights.recommendations.join('\n- ') || 'N/A'}
         `;
       }
       throw err;
