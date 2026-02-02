@@ -18,6 +18,14 @@ class EnvVars {
   @IsString()
   @IsNotEmpty()
   OLLAMA_MODEL!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  GRID_BASE_URL!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  GRID_API_KEY!: string;
 }
 
 export function validateEnv(config: Record<string, unknown>) {

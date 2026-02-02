@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MockGridProvider } from './providers/mock-grid.provider';
+import { GridGraphqlProvider } from './providers/grid-graphql.provider';
 
 export type GridMatch = {
   id: string;
@@ -14,9 +15,19 @@ export type GridMatch = {
 
 @Injectable()
 export class GridService {
-  constructor(private readonly mock: MockGridProvider) {}
+  constructor(
+    private readonly mock: MockGridProvider,
+    private readonly gridGraphql: GridGraphqlProvider,
+  ) {}
 
   async getRecentMatches(params: { teamId: string; matchCount: number }) {
-    return this.mock.getRecentMatches(params.teamId, params.matchCount);
+    try {
+      return this.gridGraphql.getRecentMatches(
+        params.teamId,
+        params.matchCount,
+      );
+    } catch (e) {
+      return this.mock.getRecentMatches(params.teamId, params.matchCount);
+    }
   }
 }
